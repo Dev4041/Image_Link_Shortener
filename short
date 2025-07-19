@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Masked URL Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    pre {
+      background: #fff;
+      padding: 15px;
+      margin-top: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      min-height: 150px;
+      font-size: 14px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Masked URL Generator</h2>
+
+  <!-- Domain Input -->
+  <input type="text" id="domain" placeholder="Enter your domain (e.g., https://yourdomain.com/mask/)">
+
+  <!-- URLs Input -->
+  <textarea id="imageUrls" placeholder="Enter image URLs (one per line)"></textarea>
+
+  <!-- Generate Button -->
+  <button onclick="generate()">Generate Links</button>
+
+  <!-- Action Buttons -->
+  <div class="btn-container">
+    <button onclick="copyLinks()">Copy All</button>
+    <button onclick="downloadLinks()">Download as .txt</button>
+  </div>
+
+  <!-- Output -->
+  <h3>Generated Links:</h3>
+  <pre id="output">Your links will appear here...</pre>
+
+  <script>
+    let generatedLinks = [];
+
+    function generate() {
+      const domain = document.getElementById('domain').value.trim();
+      const urls = document.getElementById('imageUrls').value.trim().split('\n');
+
+      if (!domain || !urls.length) {
+        alert("Please enter your domain and URLs.");
+        return;
+      }
+
+      generatedLinks = [];
+      const cleanDomain = domain.endsWith('/') ? domain : domain + '/';
+
+      urls.forEach(() => {
+        const randomString = Math.random().toString(36).substring(2, 16);
+        generatedLinks.push(cleanDomain + randomString + ".jpg");
+      });
+
+      document.getElementById('output').textContent = generatedLinks.join('\n');
+    }
+
+    function copyLinks() {
+      if (!generatedLinks.length) {
+        alert("Generate links first!");
+        return;
+      }
+      navigator.clipboard.writeText(generatedLinks.join('\n'))
+        .then(() => alert("Links copied to clipboard!"));
+    }
+
+    function downloadLinks() {
+      if (!generatedLinks.length) {
+        alert("Generate links first!");
+        return;
+      }
+      const blob = new Blob([generatedLinks.join('\n')], { type: "text/plain" });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = "masked-links.txt";
+      link.click();
+    }
+  </script>
+</body>
+</html>
